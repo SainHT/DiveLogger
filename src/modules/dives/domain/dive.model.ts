@@ -48,10 +48,5 @@ export interface DiveLog {
   isDeleted: boolean;                    // Soft delete flag
 }
 
-export interface DiveProfileSample {
-  id?: number;
-  diveId: string;                       // Foreign key matching DiveLog.id
-  timestampSeconds: number;             // Time elapsed (0, 5, 10, 15...)
-  depthMeters: number;                  // Recorded depth
-  pressureBar?: number;                 // Cylinder pressure
-}
+export type DiveProfileSample = ProfileSample;
+import type { ProfileSample } from '../../telemetry/domain/profile.model';

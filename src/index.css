@@ -568,7 +568,31 @@ button {
 }
 .profile-chart {
   height: 305px;
+  min-width: 0;
+}
+.profile-chart-wrap {
   margin-top: 20px;
+}
+.chart-series-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 14px;
+  color: #9fb1c4;
+  font-size: 12px;
+}
+.chart-series-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.chart-series-toggle input {
+  accent-color: #22d3ee;
+}
+.series-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
 }
 .chart-tooltip {
   display: grid;
@@ -579,6 +603,7 @@ button {
   border: 1px solid #31516a;
   border-radius: 5px;
   font-size: 12px;
+  box-shadow: 0 10px 26px #0008;
 }
 .detail-stats {
   display: grid;

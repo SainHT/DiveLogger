@@ -4,8 +4,12 @@ import type {
   DiveLog,
   DiveProfileSample,
 } from "../../modules/dives/domain/dive.model";
+import { generateMockProfile } from "../../modules/telemetry/utils/mockProfileGenerator";
 import { deleteDive } from "../../storage/repositories/diveRepository";
-import { getProfileSamples } from "../../storage/repositories/profileRepository";
+import {
+  getProfileSamples,
+  saveProfileSamples,
+} from "../../storage/repositories/profileRepository";
 import { BaseButton } from "../components/common/BaseButton";
 import { RatingStars } from "../components/common/RatingStars";
 import { DepthProfileChart } from "../components/charts/DepthProfileChart";
@@ -25,8 +29,32 @@ export function DiveDetailView({
 }) {
   const [samples, setSamples] = useState<DiveProfileSample[]>([]);
   useEffect(() => {
-    void getProfileSamples(dive.id).then(setSamples);
-  }, [dive.id]);
+    void (async () => {
+      const storedSamples = await getProfileSamples(dive.id);
+      if (storedSamples.length > 0 || dive.diveNumber !== 1) {
+        setSamples(storedSamples);
+        return;
+      }
+
+      const mockSamples = generateMockProfile(dive.id, {
+        durationSeconds: dive.duration,
+        maxDepthMeters: dive.maxDepthMeters,
+        startPressureBar: dive.startPressureBar,
+        endPressureBar: dive.endPressureBar,
+        surfaceTemperatureCelsius: dive.maxWaterTempCelsius ?? 25,
+      });
+      await saveProfileSamples(mockSamples);
+      setSamples(mockSamples);
+    })();
+  }, [
+    dive.diveNumber,
+    dive.duration,
+    dive.endPressureBar,
+    dive.id,
+    dive.maxDepthMeters,
+    dive.maxWaterTempCelsius,
+    dive.startPressureBar,
+  ]);
   const remove = async () => {
     if (window.confirm("Delete this dive from your logbook?")) {
       await deleteDive(dive.id);
@@ -66,18 +94,18 @@ export function DiveDetailView({
           </BaseButton>
         </div>
       </section>
-      <section className="panel">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">TELEMETRY</span>
-            <h2>Depth profile</h2>
+      {samples.length > 0 && (
+        <section className="panel">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">TELEMETRY</span>
+              <h2>Depth profile</h2>
+            </div>
+            <span className="muted">{samples.length} samples</span>
           </div>
-          <span className="muted">
-            {samples.length ? `${samples.length} samples` : "No samples"}
-          </span>
-        </div>
-        <DepthProfileChart samples={samples} />
-      </section>
+          <DepthProfileChart samples={samples} />
+        </section>
+      )}
       <section className="detail-stats">
         <DetailStat
           label="Max depth"
