@@ -18,6 +18,11 @@ export class LocalDiveDatabase extends Dexie {
       profileSamples: '++id, diveId, timestampSeconds',
       presets: 'id, name, updatedAt',
     });
+    this.version(3).stores({
+      dives: 'id, diveNumber, date, gasMix, waterType, updatedAt, isSynced',
+      profileSamples: '++id, diveId, timestampSeconds',
+      presets: 'id, name, updatedAt',
+    });
     this.on('populate', (transaction) => transaction.table('presets').bulkAdd(seedPresets));
   }
 }
