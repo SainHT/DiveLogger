@@ -837,6 +837,12 @@ button {
   .form-actions .button {
     flex: 1;
   }
+  .planner-controls {
+    grid-template-columns: 1fr;
+  }
+  .planner-depths {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .bottom-nav {
