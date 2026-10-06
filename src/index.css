@@ -702,6 +702,55 @@ button {
   justify-content: end;
   gap: 10px;
 }
+.calculation-callout {
+  display: flex;
+  gap: 24px;
+  margin-top: 20px;
+  padding: 13px 15px;
+  color: #b9c7d6;
+  background: #0c192a;
+  border: 1px solid #263b52;
+  border-radius: 6px;
+  font: 12px "DM Mono", monospace;
+}
+.calculation-callout strong {
+  color: #67e8f9;
+}
+.planner-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  align-items: end;
+}
+.planner-depths {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 22px;
+}
+.planner-depth {
+  display: grid;
+  gap: 8px;
+  padding: 14px 8px;
+  color: #b9c7d6;
+  background: #132238;
+  border: 1px solid #263b52;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.planner-depth:hover,
+.planner-depth.selected {
+  color: #06141b;
+  background: #22d3ee;
+  border-color: #22d3ee;
+}
+.planner-depth:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.planner-depth strong {
+  font: 12px "DM Mono", monospace;
+}
 .form-error {
   margin: 0;
   color: #fda4af;

@@ -13,6 +13,7 @@ import {
 import { BaseButton } from "../components/common/BaseButton";
 import { RatingStars } from "../components/common/RatingStars";
 import { DepthProfileChart } from "../components/charts/DepthProfileChart";
+import { calculateSAC } from "../../modules/physics/utils/gasCalculations";
 
 const value = (item: number | string | undefined, suffix = "") =>
   item == null || item === "" ? "—" : `${item}${suffix}`;
@@ -61,6 +62,13 @@ export function DiveDetailView({
       onDeleted();
     }
   };
+  const consumption = calculateSAC({
+    startPressureBar: dive.startPressureBar,
+    endPressureBar: dive.endPressureBar,
+    durationMinutes: dive.duration / 60,
+    avgDepthMeters: dive.avgDepthMeters ?? dive.maxDepthMeters,
+    tankCapacityLiters: dive.tankCapacityLiters,
+  });
   return (
     <div className="page-stack">
       <button className="back-link" onClick={onBack}>
@@ -124,7 +132,10 @@ export function DiveDetailView({
           label="Tank pressure"
           value={`${dive.startPressureBar} → ${dive.endPressureBar} bar`}
         />
-        <DetailStat label="SAC / consumption" value="Not calculated" />
+        <DetailStat
+          label="SAC"
+          value={`${consumption.sacBarMin.toFixed(2)} bar/min`}
+        />
       </section>
       <section className="info-grid">
         <InfoBlock title="Environment">

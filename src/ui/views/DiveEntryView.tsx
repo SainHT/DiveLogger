@@ -17,6 +17,7 @@ import { savePreset } from "../../storage/repositories/presetRepository";
 import { BaseButton } from "../components/common/BaseButton";
 import { BaseInput } from "../components/common/BaseInput";
 import { RatingStars } from "../components/common/RatingStars";
+import { calculateSAC } from "../../modules/physics/utils/gasCalculations";
 
 type FormState = Omit<NewDiveLog, "diveNumber" | "duration"> & {
   diveNumber: number;
@@ -203,8 +204,15 @@ export function DiveEntryView({
       setSaving(false);
     }
   };
-  const mod =
-    form.gasMix === "AIR" ? 56.6 : form.gasMix === "EAN32" ? 39.4 : 33.9;
+  const fO2 = form.gasMix === "AIR" ? 0.21 : form.gasMix === "EAN32" ? 0.32 : 0.36;
+  const consumption = calculateSAC({
+    startPressureBar: form.startPressureBar,
+    endPressureBar: form.endPressureBar,
+    durationMinutes: form.duration,
+    avgDepthMeters: form.avgDepthMeters ?? form.maxDepthMeters,
+    tankCapacityLiters: form.tankCapacityLiters,
+  });
+  const mod = ((1.4 / fO2) - 1) * 10;
   return (
     <div className="page-stack">
       <button className="back-link" onClick={onCancel}>
@@ -385,6 +393,10 @@ export function DiveEntryView({
                 set("tankType", value as FormState["tankType"])
               }
             />
+          </div>
+          <div className="calculation-callout" aria-live="polite">
+            <span><strong>SAC</strong> {consumption.sacBarMin.toFixed(2)} bar/min</span>
+            <span><strong>RMV</strong> {consumption.rmvLmin == null ? "—" : `${consumption.rmvLmin.toFixed(2)} L/min`}</span>
           </div>
         </FormSection>
         <FormSection title="Gear and environment">
