@@ -774,6 +774,47 @@ button {
   display: grid;
   gap: 12px;
 }
+.planner-profile-warning {
+  border-color: #9f1239;
+}
+.planner-ppo2-badge {
+  padding: 6px 9px;
+  color: #67e8f9;
+  background: #0c2a3b;
+  border: 1px solid #155e75;
+  border-radius: 5px;
+  font: 11px "DM Mono", monospace;
+}
+.planner-ppo2-badge.warning {
+  color: #fda4af;
+  background: #351b28;
+  border-color: #9f1239;
+}
+.planner-profile-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin-top: 18px;
+  overflow: hidden;
+  background: #263b52;
+  border: 1px solid #263b52;
+  border-radius: 6px;
+}
+.planner-profile-metrics > div {
+  display: grid;
+  gap: 7px;
+  padding: 14px;
+  background: #132238;
+}
+.planner-profile-metrics strong {
+  color: #f8fafc;
+  font-size: 15px;
+}
+.planner-settings-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
 .planner-warning {
   display: flex;
   flex-wrap: wrap;
@@ -847,6 +888,9 @@ button {
   }
   .planner-mode {
     display: none;
+  }
+  .planner-profile-metrics {
+    grid-template-columns: repeat(2, 1fr);
   }
   .app-header {
     padding: 0 20px;

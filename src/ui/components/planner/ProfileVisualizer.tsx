@@ -14,12 +14,25 @@ export interface ProfilePoint {
   ppo2: number;
 }
 
-export function ProfileVisualizer({ points, mod }: { points: ProfilePoint[]; mod: number }) {
+interface ProfileMetrics {
+  ndl: number;
+  mod: number;
+  ead: number;
+  gfLow: number;
+  gfHigh: number;
+  ppo2: number;
+}
+
+export function ProfileVisualizer({ points, metrics }: { points: ProfilePoint[]; metrics: ProfileMetrics }) {
+  const isPPO2Warning = metrics.ppo2 >= 1.35;
+
   return (
-    <section className="panel">
+    <section className={isPPO2Warning ? "panel planner-profile planner-profile-warning" : "panel planner-profile"}>
       <div className="section-heading">
         <div><span className="eyebrow">PROFILE PREVIEW</span><h2>Single-gas waypoint profile</h2></div>
-        <span className="muted">MOD {mod.toFixed(1)} m</span>
+        <span className={isPPO2Warning ? "planner-ppo2-badge warning" : "planner-ppo2-badge"}>
+          PPO₂ {metrics.ppo2.toFixed(2)} bar {isPPO2Warning ? "· Near limit" : "· Safe"}
+        </span>
       </div>
       <div className="profile-chart-wrap">
         <div className="profile-chart">
@@ -44,6 +57,12 @@ export function ProfileVisualizer({ points, mod }: { points: ProfilePoint[]; mod
             </LineChart>
           </ResponsiveContainer>
         </div>
+      </div>
+      <div className="planner-profile-metrics">
+        <div><span className="eyebrow">NDL</span><strong>{metrics.ndl} min</strong></div>
+        <div><span className="eyebrow">MOD</span><strong>{metrics.mod.toFixed(1)} m</strong></div>
+        <div><span className="eyebrow">EAD</span><strong>{metrics.ead.toFixed(1)} m</strong></div>
+        <div><span className="eyebrow">GF LOW / HIGH</span><strong>{Math.round(metrics.gfLow * 100)} / {Math.round(metrics.gfHigh * 100)}%</strong></div>
       </div>
     </section>
   );

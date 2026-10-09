@@ -63,44 +63,15 @@ export function DivePlannerView() {
         </div>
         <span className="planner-mode">Single-gas mode</span>
       </section>
-      <section className="panel planner-controls">
-        <label className="field">
-          <span className="field-label">Gas mix</span>
-          <select value={GAS_OPTIONS.some((gas) => gas.fO2 === fO2) ? fO2 : "custom"} onChange={(event) => selectGas(event.target.value)}>
-            {GAS_OPTIONS.map((gas) => (
-              <option key={gas.fO2} value={gas.fO2}>{gas.label}</option>
-            ))}
-            <option value="custom">Custom mix</option>
-          </select>
-        </label>
-        {isCustomGas && (
-          <BaseInput
-            label="Custom O₂ (%)"
-            type="number"
-            min="21"
-            max="40"
-            step="1"
-            value={Math.round(customFO2 * 100)}
-            onChange={(event) => {
-              const value = Math.min(40, Math.max(21, Number(event.target.value)));
-              setCustomFO2(value / 100);
-              setFO2(value / 100);
-            }}
-          />
-        )}
-        <BaseInput
-          label="Target depth (m)"
-          type="number"
-          min="0"
-          max={mod}
-          step="1"
-          value={safeDepth}
-          onChange={(event) => setDepth(Math.min(mod, Math.max(0, Number(event.target.value))))}
-        />
-        <BaseInput label="Bottom time (min)" type="number" min="1" max="300" step="1" value={time} onChange={(event) => setTime(Math.min(300, Math.max(1, Number(event.target.value))))} />
-        <GfRangeSlider gfLow={gfLow} gfHigh={gfHigh} onChange={(low, high) => { setGfLow(low); setGfHigh(high); }} />
-      </section>
+
+      <NdlLookupTable depths={standardDepths} selectedDepth={safeDepth} fO2={fO2} gradientFactorHigh={gfHigh} onSelect={setDepth} />
+
+      <ProfileVisualizer points={profile} metrics={{ ndl, mod, ead, gfLow, gfHigh, ppo2 }} />
+
       <section className="panel planner-depth-control">
+        <div className="section-heading">
+          <div><span className="eyebrow">PROFILE CONTROLS</span><h2>Target depth & duration</h2></div>
+        </div>
         <div className="planner-control-heading">
           <span className="field-label">Target depth</span>
           <strong className="hint">{safeDepth.toFixed(1)} m / {mod.toFixed(1)} m MOD</strong>
@@ -114,19 +85,60 @@ export function DivePlannerView() {
           value={safeDepth}
           onChange={(event) => setDepth(Number(event.target.value))}
         />
+        <BaseInput
+          label="Target depth (m)"
+          type="number"
+          min="0"
+          max={mod}
+          step="1"
+          value={safeDepth}
+          onChange={(event) => setDepth(Math.min(mod, Math.max(0, Number(event.target.value))))}
+        />
+        <label className="field">
+          <span className="field-label">Bottom time: {time} min</span>
+          <input type="range" min="1" max="300" step="1" value={time} onChange={(event) => setTime(Number(event.target.value))} />
+        </label>
+        <BaseInput
+          label="Bottom time (min)"
+          type="number"
+          min="1"
+          max="300"
+          step="1"
+          value={time}
+          onChange={(event) => setTime(Math.min(300, Math.max(1, Number(event.target.value))))}
+        />
       </section>
-      <section className={safeDepth >= mod - 1 ? "planner-warning danger" : "planner-warning"}>
-        <strong>{safeDepth >= mod - 1 ? "PPO₂ depth limit warning" : "PPO₂ safety limit"}</strong>
-        <span>{ppo2.toFixed(2)} bar at {safeDepth.toFixed(1)} m — maximum is 1.40 bar (MOD {mod.toFixed(1)} m).</span>
+
+      <section className="panel planner-settings">
+        <div className="section-heading">
+          <div><span className="eyebrow">SETTINGS</span><h2>Gas mix & gradient factors</h2></div>
+        </div>
+        <div className="planner-settings-grid">
+          <label className="field">
+            <span className="field-label">Gas mix</span>
+            <select value={GAS_OPTIONS.some((gas) => gas.fO2 === fO2) ? fO2 : "custom"} onChange={(event) => selectGas(event.target.value)}>
+              {GAS_OPTIONS.map((gas) => <option key={gas.fO2} value={gas.fO2}>{gas.label}</option>)}
+              <option value="custom">Custom mix</option>
+            </select>
+          </label>
+          {isCustomGas && (
+            <BaseInput
+              label="Custom O₂ (%)"
+              type="number"
+              min="21"
+              max="40"
+              step="1"
+              value={Math.round(customFO2 * 100)}
+              onChange={(event) => {
+                const value = Math.min(40, Math.max(21, Number(event.target.value)));
+                setCustomFO2(value / 100);
+                setFO2(value / 100);
+              }}
+            />
+          )}
+          <GfRangeSlider gfLow={gfLow} gfHigh={gfHigh} onChange={(low, high) => { setGfLow(low); setGfHigh(high); }} />
+        </div>
       </section>
-      <section className="detail-stats planner-stats">
-        <div className="detail-stat"><span className="eyebrow">NDL</span><strong>{ndl} min</strong></div>
-        <div className="detail-stat"><span className="eyebrow">MOD @ 1.4 PPO2</span><strong>{mod.toFixed(1)} m</strong></div>
-        <div className="detail-stat"><span className="eyebrow">EAD</span><strong>{ead.toFixed(1)} m</strong></div>
-        <div className="detail-stat"><span className="eyebrow">GF LOW / HIGH</span><strong>{Math.round(gfLow * 100)} / {Math.round(gfHigh * 100)}%</strong></div>
-      </section>
-      <NdlLookupTable depths={standardDepths} selectedDepth={safeDepth} fO2={fO2} gradientFactorHigh={gfHigh} onSelect={setDepth} />
-      <ProfileVisualizer points={profile} mod={mod} />
     </div>
   );
 }
