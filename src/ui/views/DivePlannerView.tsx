@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { calculateNDL } from "../../modules/physics/engine/buhlmann";
-import { calculateEAD, calculateMOD } from "../../modules/physics/utils/gasCalculations";
+import { calculateMOD } from "../../modules/physics/utils/gasCalculations";
 import { getSampledNDLDepths } from "../../modules/physics/utils/depthSampler";
 import { BaseInput } from "../components/common/BaseInput";
 import { NdlLookupTable } from "../components/planner/NdlLookupTable";
-import { ProfileVisualizer, type ProfilePoint } from "../components/planner/ProfileVisualizer";
+import { InteractiveProfileGraph } from "../components/planner/InteractiveProfileGraph";
+import { generateDivePlanFromTotalTime } from "../../modules/physics/utils/profilePlanner";
 
 const GAS_OPTIONS = [
   { label: "Air (21%)", fO2: 0.21 },
@@ -19,7 +19,7 @@ const GF_PRESETS = [
 
 export function DivePlannerView() {
   const [depth, setDepth] = useState(18);
-  const [time, setTime] = useState(40);
+  const [totalTime, setTotalTime] = useState(45);
   const [fO2, setFO2] = useState(0.21);
   const [gfLow, setGfLow] = useState(0.4);
   const [gfHigh, setGfHigh] = useState(0.85);
@@ -33,24 +33,11 @@ export function DivePlannerView() {
   const mod = calculateMOD(fO2);
   const safeDepth = Math.min(Math.max(0, depth), mod);
   const ppo2 = (1 + safeDepth / 10) * fO2;
-  const ndl = calculateNDL(safeDepth, fO2, gfHigh);
-  const ead = calculateEAD(safeDepth, fO2);
   const standardDepths = getSampledNDLDepths(mod, isMobile);
-  const profile = useMemo<ProfilePoint[]>(() => {
-    const descentMinutes = 2;
-    const ascentMinutes = 3;
-    const sample = (sampleTime: number, sampleDepth: number): ProfilePoint => ({
-      time: sampleTime,
-      depth: sampleDepth,
-      ppo2: (1 + sampleDepth / 10) * fO2,
-    });
-    return [
-      sample(0, 0),
-      sample(descentMinutes, safeDepth),
-      sample(descentMinutes + time, safeDepth),
-      sample(descentMinutes + time + ascentMinutes, 0),
-    ];
-  }, [fO2, safeDepth, time]);
+  const plan = useMemo(
+    () => generateDivePlanFromTotalTime(safeDepth, totalTime, fO2, gfHigh),
+    [safeDepth, totalTime, fO2, gfHigh],
+  );
 
   return (
     <div className="page-stack">
@@ -65,7 +52,20 @@ export function DivePlannerView() {
 
       <NdlLookupTable depths={standardDepths} selectedDepth={safeDepth} fO2={fO2} gradientFactorHigh={gfHigh} onSelect={setDepth} />
 
-      <ProfileVisualizer points={profile} metrics={{ ndl, mod, ead, gfLow, gfHigh, ppo2 }} />
+      <section className={ppo2 >= 1.35 ? "panel planner-profile planner-profile-warning" : "panel planner-profile"}>
+        <div className="section-heading">
+          <div><span className="eyebrow">PROFILE PREVIEW</span><h2>Interactive dive profile</h2></div>
+          <span className={ppo2 >= 1.35 ? "planner-ppo2-badge warning" : "planner-ppo2-badge"}>PPO₂ {ppo2.toFixed(2)} bar</span>
+        </div>
+        <InteractiveProfileGraph samples={plan.samples} maxDepth={safeDepth} hasDeepStop={plan.hasDeepStop} deepStopDepth={plan.deepStopDepthMeters} safetyStopDuration={plan.safetyStopDurationMinutes} />
+        <div className="planner-profile-metrics">
+          <div><span className="eyebrow">NDL</span><strong>{plan.ndlMinutes} min</strong></div>
+          <div><span className="eyebrow">BOTTOM TIME</span><strong>{plan.maximizedBottomTimeMinutes} min</strong></div>
+          <div><span className="eyebrow">MOD</span><strong>{mod.toFixed(1)} m</strong></div>
+          <div><span className="eyebrow">GF LOW / HIGH</span><strong>{Math.round(gfLow * 100)} / {Math.round(gfHigh * 100)}%</strong></div>
+        </div>
+        {plan.isDecoDive && <p className="planner-warning danger">Decompression warning: requested runtime exceeds the no-decompression limit.</p>}
+      </section>
 
       <section className="panel planner-setup">
         <div className="section-heading">
@@ -116,13 +116,13 @@ export function DivePlannerView() {
           onChange={(event) => setDepth(Number(event.target.value))}
         />
         <BaseInput
-          label="Bottom time (min)"
+          label="Total planned dive time (min)"
           type="number"
           min="1"
           max="180"
           step="1"
-          value={time}
-          onChange={(event) => setTime(Math.min(180, Math.max(1, Number(event.target.value))))}
+          value={totalTime}
+          onChange={(event) => setTotalTime(Math.min(180, Math.max(1, Number(event.target.value))))}
         />
       </section>
 

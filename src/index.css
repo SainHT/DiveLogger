@@ -899,6 +899,42 @@ button {
   color: #f8fafc;
   font-size: 15px;
 }
+.planner-waypoint-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.planner-waypoint-badge {
+  padding: 6px 9px;
+  border-radius: 5px;
+  font: 11px "DM Mono", monospace;
+}
+.planner-waypoint-badge.deep {
+  color: #fde68a;
+  background: #3a2b0b;
+  border: 1px solid #a16207;
+}
+.planner-waypoint-badge.descent {
+  color: #a5f3fc;
+  background: #123441;
+  border: 1px solid #0e7490;
+}
+.planner-waypoint-badge.bottom {
+  color: #dbeafe;
+  background: #172554;
+  border: 1px solid #3730a3;
+}
+.planner-waypoint-badge.ascent {
+  color: #bbf7d0;
+  background: #123323;
+  border: 1px solid #15803d;
+}
+.planner-waypoint-badge.safety {
+  color: #fed7aa;
+  background: #3b2110;
+  border: 1px solid #c2410c;
+}
 .planner-settings-grid {
   display: grid;
   gap: 16px;
