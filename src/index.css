@@ -865,6 +865,11 @@ button {
 }
 .planner-profile-warning {
   border-color: #9f1239;
+  animation: planner-po2-pulse 1.8s ease-in-out infinite;
+}
+@keyframes planner-po2-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 #e11d4833; }
+  50% { box-shadow: 0 0 0 4px #e11d4855; }
 }
 .planner-ppo2-badge {
   padding: 6px 9px;
@@ -878,6 +883,10 @@ button {
   color: #fda4af;
   background: #351b28;
   border-color: #9f1239;
+}
+.planner-ppo2-badge.warning span {
+  color: #fda4af;
+  font-weight: 400;
 }
 .planner-profile-metrics {
   display: grid;
@@ -915,25 +924,10 @@ button {
   background: #3a2b0b;
   border: 1px solid #a16207;
 }
-.planner-waypoint-badge.descent {
-  color: #a5f3fc;
-  background: #123441;
-  border: 1px solid #0e7490;
-}
-.planner-waypoint-badge.bottom {
-  color: #dbeafe;
-  background: #172554;
-  border: 1px solid #3730a3;
-}
-.planner-waypoint-badge.ascent {
+.planner-waypoint-badge.safety {
   color: #bbf7d0;
   background: #123323;
   border: 1px solid #15803d;
-}
-.planner-waypoint-badge.safety {
-  color: #fed7aa;
-  background: #3b2110;
-  border: 1px solid #c2410c;
 }
 .planner-settings-grid {
   display: grid;
@@ -961,6 +955,11 @@ button {
 }
 .planner-warning.danger strong {
   color: #fda4af;
+}
+.planner-ndl-info {
+  color: #bae6fd;
+  background: #102b3d;
+  border-color: #25617a;
 }
 .planner-depths {
   display: flex;

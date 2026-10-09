@@ -45,8 +45,8 @@ export function interpolateProfileSamples(
     samples.push({
       timeMinutes: sampleTime,
       depthMeters: Number((start.depthMeters + (end.depthMeters - start.depthMeters) * progress).toFixed(2)),
-      phase: progress >= 1 ? end.phase : start.phase,
-      note: progress >= 1 ? end.note : start.note,
+      phase: sampleTime === 0 ? start.phase : end.phase,
+      note: sampleTime === 0 ? start.note : end.note,
     });
   }
 
@@ -92,16 +92,17 @@ export function generateDivePlanFromTotalTime(
     safetyDuration +
     finalAscent;
 
-  // 3. Calculate initial bottom time and cap strictly at NDL
+  // 3. Keep bottom time two minutes below the absolute NDL.
+  const safeNdlCap = Math.max(1, ndl - 2);
   let safetyStopDuration = 3;
   let rawBottom = totalTime - getOverhead(safetyStopDuration);
-  let bottom = Math.max(1, Math.min(rawBottom, ndl));
+  let bottom = Math.max(1, Math.min(rawBottom, safeNdlCap));
 
-  // 4. Adjust safety stop duration (5 min if deep stop required or near NDL)
-  if (hasDeepStop || bottom >= ndl - 2) {
+  // 4. Use the longer safety stop for deep dives or plans near the safety cap.
+  if (hasDeepStop || bottom >= safeNdlCap - 2) {
     safetyStopDuration = 5;
     rawBottom = totalTime - getOverhead(safetyStopDuration);
-    bottom = Math.max(1, Math.min(rawBottom, ndl));
+    bottom = Math.max(1, Math.min(rawBottom, safeNdlCap));
   }
 
   // 5. Calculate leftover time after capping bottom time at NDL
@@ -138,19 +139,14 @@ export function generateDivePlanFromTotalTime(
     });
   };
 
-  waypoints.push({
-    timeMinutes: 0,
-    depthMeters: 0,
-    phase: "Surface",
-    note: "Dive start",
-  });
-
-  add(descent, depth, "Descent", "Maximum depth");
+  
+  add(0, 0, "Surface", "Dive start");
+  add(descent, depth, "Descent", "Reaching target depth");
   add(
     bottom,
     depth,
     "Bottom",
-    bottom === ndl ? "Bottom time capped at NDL" : "Planned bottom time",
+    bottom === safeNdlCap ? "Bottom time capped at NDL - 2 minute safety margin" : "Planned bottom time",
   );
 
   if (hasDeepStop) {
@@ -180,7 +176,7 @@ export function generateDivePlanFromTotalTime(
     "Safety Stop",
     `${safetyStopDuration} minute safety stop`,
   );
-  add(finalAscent, 0, "Ascent", "Surface arrival");
+  add(finalAscent, 0, "Surface", "Surface arrival");
 
   return {
     waypoints,
@@ -188,6 +184,7 @@ export function generateDivePlanFromTotalTime(
     totalTimeMinutes: Number(elapsed.toFixed(1)),
     maximizedBottomTimeMinutes: Number(bottom.toFixed(1)),
     ndlMinutes: ndl,
+    // Recreational plans are always constrained by the NDL safety margin.
     isDecoDive: false,
     hasDeepStop,
     deepStopDepthMeters: hasDeepStop ? deepStopDepth : null,

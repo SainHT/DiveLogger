@@ -33,6 +33,7 @@ export function DivePlannerView() {
   const mod = calculateMOD(fO2);
   const safeDepth = Math.min(Math.max(0, depth), mod);
   const ppo2 = (1 + safeDepth / 10) * fO2;
+  const isPPO2Warning = ppo2 >= 1.35;
   const standardDepths = getSampledNDLDepths(mod, isMobile);
   const plan = useMemo(
     () => generateDivePlanFromTotalTime(safeDepth, totalTime, fO2, gfHigh),
@@ -52,10 +53,13 @@ export function DivePlannerView() {
 
       <NdlLookupTable depths={standardDepths} selectedDepth={safeDepth} fO2={fO2} gradientFactorHigh={gfHigh} onSelect={setDepth} />
 
-      <section className={ppo2 >= 1.35 ? "panel planner-profile planner-profile-warning" : "panel planner-profile"}>
+      <section className={isPPO2Warning ? "panel planner-profile planner-profile-warning" : "panel planner-profile"}>
         <div className="section-heading">
           <div><span className="eyebrow">PROFILE PREVIEW</span><h2>Interactive dive profile</h2></div>
-          <span className={ppo2 >= 1.35 ? "planner-ppo2-badge warning" : "planner-ppo2-badge"}>PPO₂ {ppo2.toFixed(2)} bar</span>
+          <span className={isPPO2Warning ? "planner-ppo2-badge warning" : "planner-ppo2-badge"}>
+            <strong>{isPPO2Warning ? "⚠ High PPO₂ Warning: " : "PPO₂: "}{ppo2.toFixed(2)} bar</strong>
+            {isPPO2Warning && <span> — Approaching 1.40 bar PPO₂ Safety Limit!</span>}
+          </span>
         </div>
         <InteractiveProfileGraph samples={plan.samples} maxDepth={safeDepth} hasDeepStop={plan.hasDeepStop} deepStopDepth={plan.deepStopDepthMeters} safetyStopDuration={plan.safetyStopDurationMinutes} />
         <div className="planner-profile-metrics">
