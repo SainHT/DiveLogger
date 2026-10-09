@@ -25,6 +25,7 @@ export const ZHL16C_N2_TABLE: ReadonlyArray<
 
 const WATER_VAPOUR_PRESSURE_BAR = 0.0567;
 const SURFACE_N2_FRACTION = 0.79;
+const SURFACE_PRESSURE_BAR = 1;
 
 export function calculateNDL(
   depthMeters: number,
@@ -52,10 +53,11 @@ export function calculateNDL(
         initialN2 +
         (alveolarN2 - initialN2) *
           (1 - Math.pow(2, -minutes / compartment.halfLifeN2));
-      const mValue = compartment.a + ambientPressure / compartment.b;
+      const mValue =
+        compartment.a + SURFACE_PRESSURE_BAR / compartment.b;
       const allowedN2 =
-        ambientPressure +
-        gradientFactorHigh * (mValue - ambientPressure);
+        SURFACE_PRESSURE_BAR +
+        gradientFactorHigh * (mValue - SURFACE_PRESSURE_BAR);
       return tissueN2 > allowedN2;
     });
 
