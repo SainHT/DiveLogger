@@ -1,32 +1,41 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { calculateNDL } from "../../modules/physics/engine/buhlmann";
 import { calculateEAD, calculateMOD } from "../../modules/physics/utils/gasCalculations";
+import { getSampledNDLDepths } from "../../modules/physics/utils/depthSampler";
 import { BaseInput } from "../components/common/BaseInput";
-import { GfRangeSlider } from "../components/planner/GfRangeSlider";
 import { NdlLookupTable } from "../components/planner/NdlLookupTable";
 import { ProfileVisualizer, type ProfilePoint } from "../components/planner/ProfileVisualizer";
 
-const DEPTHS = [12, 15, 18, 20, 24, 27, 30, 33, 36, 40];
 const GAS_OPTIONS = [
   { label: "Air (21%)", fO2: 0.21 },
   { label: "EAN32 (32%)", fO2: 0.32 },
   { label: "EAN36 (36%)", fO2: 0.36 },
+];
+const GF_PRESETS = [
+  { label: "Conservative", low: 0.3, high: 0.7, display: "30 / 70" },
+  { label: "Medium", low: 0.4, high: 0.85, display: "40 / 85" },
+  { label: "Lenient", low: 0.5, high: 0.9, display: "50 / 90" },
 ];
 
 export function DivePlannerView() {
   const [depth, setDepth] = useState(18);
   const [time, setTime] = useState(40);
   const [fO2, setFO2] = useState(0.21);
-  const [customFO2, setCustomFO2] = useState(0.4);
-  const [isCustomGas, setIsCustomGas] = useState(false);
   const [gfLow, setGfLow] = useState(0.4);
   const [gfHigh, setGfHigh] = useState(0.85);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const updateMobile = () => setIsMobile(window.innerWidth < 640);
+    updateMobile();
+    window.addEventListener("resize", updateMobile);
+    return () => window.removeEventListener("resize", updateMobile);
+  }, []);
   const mod = calculateMOD(fO2);
   const safeDepth = Math.min(Math.max(0, depth), mod);
   const ppo2 = (1 + safeDepth / 10) * fO2;
   const ndl = calculateNDL(safeDepth, fO2, gfHigh);
   const ead = calculateEAD(safeDepth, fO2);
-  const standardDepths = DEPTHS.filter((standardDepth) => standardDepth <= mod);
+  const standardDepths = getSampledNDLDepths(mod, isMobile);
   const profile = useMemo<ProfilePoint[]>(() => {
     const descentMinutes = 2;
     const ascentMinutes = 3;
@@ -43,16 +52,6 @@ export function DivePlannerView() {
     ];
   }, [fO2, safeDepth, time]);
 
-  const selectGas = (value: string) => {
-    if (value === "custom") {
-      setIsCustomGas(true);
-      setFO2(customFO2);
-      return;
-    }
-    setIsCustomGas(false);
-    setFO2(Number(value));
-  };
-
   return (
     <div className="page-stack">
       <section className="page-heading">
@@ -68,9 +67,40 @@ export function DivePlannerView() {
 
       <ProfileVisualizer points={profile} metrics={{ ndl, mod, ead, gfLow, gfHigh, ppo2 }} />
 
-      <section className="panel planner-depth-control">
+      <section className="panel planner-setup">
         <div className="section-heading">
-          <div><span className="eyebrow">PROFILE CONTROLS</span><h2>Target depth & duration</h2></div>
+          <div><span className="eyebrow">DIVE SETUP</span><h2>Plan this dive</h2></div>
+        </div>
+        <div className="planner-setup-grid">
+          <label className="field">
+            <span className="field-label">Gas mix</span>
+            <select value={fO2} onChange={(event) => setFO2(Number(event.target.value))}>
+              {GAS_OPTIONS.map((gas) => <option key={gas.fO2} value={gas.fO2}>{gas.label}</option>)}
+            </select>
+          </label>
+          <div className="planner-gf-presets">
+            <span className="field-label">Gradient factors</span>
+            <div className="planner-preset-toggle" role="group" aria-label="Gradient factor presets">
+              {GF_PRESETS.map((preset) => {
+                const isActive = gfLow === preset.low && gfHigh === preset.high;
+                return (
+                  <button
+                    type="button"
+                    className={isActive ? "planner-preset active" : "planner-preset"}
+                    key={preset.label}
+                    aria-pressed={isActive}
+                    onClick={() => {
+                      setGfLow(preset.low);
+                      setGfHigh(preset.high);
+                    }}
+                  >
+                    <span>{preset.label}</span>
+                    <strong>{preset.display}</strong>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
         <div className="planner-control-heading">
           <span className="field-label">Target depth</span>
@@ -79,66 +109,23 @@ export function DivePlannerView() {
         <input
           aria-label="Target depth"
           type="range"
-          min="0"
+          min="10"
           max={mod}
           step="0.1"
           value={safeDepth}
           onChange={(event) => setDepth(Number(event.target.value))}
         />
         <BaseInput
-          label="Target depth (m)"
-          type="number"
-          min="0"
-          max={mod}
-          step="1"
-          value={safeDepth}
-          onChange={(event) => setDepth(Math.min(mod, Math.max(0, Number(event.target.value))))}
-        />
-        <label className="field">
-          <span className="field-label">Bottom time: {time} min</span>
-          <input type="range" min="1" max="300" step="1" value={time} onChange={(event) => setTime(Number(event.target.value))} />
-        </label>
-        <BaseInput
           label="Bottom time (min)"
           type="number"
           min="1"
-          max="300"
+          max="180"
           step="1"
           value={time}
-          onChange={(event) => setTime(Math.min(300, Math.max(1, Number(event.target.value))))}
+          onChange={(event) => setTime(Math.min(180, Math.max(1, Number(event.target.value))))}
         />
       </section>
 
-      <section className="panel planner-settings">
-        <div className="section-heading">
-          <div><span className="eyebrow">SETTINGS</span><h2>Gas mix & gradient factors</h2></div>
-        </div>
-        <div className="planner-settings-grid">
-          <label className="field">
-            <span className="field-label">Gas mix</span>
-            <select value={GAS_OPTIONS.some((gas) => gas.fO2 === fO2) ? fO2 : "custom"} onChange={(event) => selectGas(event.target.value)}>
-              {GAS_OPTIONS.map((gas) => <option key={gas.fO2} value={gas.fO2}>{gas.label}</option>)}
-              <option value="custom">Custom mix</option>
-            </select>
-          </label>
-          {isCustomGas && (
-            <BaseInput
-              label="Custom O₂ (%)"
-              type="number"
-              min="21"
-              max="40"
-              step="1"
-              value={Math.round(customFO2 * 100)}
-              onChange={(event) => {
-                const value = Math.min(40, Math.max(21, Number(event.target.value)));
-                setCustomFO2(value / 100);
-                setFO2(value / 100);
-              }}
-            />
-          )}
-          <GfRangeSlider gfLow={gfLow} gfHigh={gfHigh} onChange={(low, high) => { setGfLow(low); setGfHigh(high); }} />
-        </div>
-      </section>
     </div>
   );
 }

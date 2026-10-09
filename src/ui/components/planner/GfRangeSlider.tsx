@@ -17,29 +17,35 @@ export function GfRangeSlider({ gfLow, gfHigh, onChange }: Props) {
         <span className="field-label">Gradient factors (low / high)</span>
         <strong className="hint">{Math.round(gfLow * 100)} / {Math.round(gfHigh * 100)}%</strong>
       </div>
-      <div className="planner-gf-controls">
-        <label className="field">
-          <span className="field-label">GF Low: {Math.round(gfLow * 100)}%</span>
-          <input
-            type="range"
-            min="0.3"
-            max="0.7"
-            step="0.05"
-            value={gfLow}
-            onChange={(event) => onChange(Math.min(Number(event.target.value), gfHigh), gfHigh)}
-          />
-        </label>
-        <label className="field">
-          <span className="field-label">GF High: {Math.round(gfHigh * 100)}%</span>
-          <input
-            type="range"
-            min="0.7"
-            max="0.95"
-            step="0.05"
-            value={gfHigh}
-            onChange={(event) => onChange(gfLow, Math.max(Number(event.target.value), gfLow))}
-          />
-        </label>
+      <div className="planner-gf-track">
+        <div className="planner-gf-track-background" />
+        <div
+          className="planner-gf-track-active"
+          style={{
+            left: `${((gfLow - 0.3) / 0.65) * 100}%`,
+            right: `${100 - ((gfHigh - 0.3) / 0.65) * 100}%`,
+          }}
+        />
+        <input
+          aria-label="GF Low"
+          className={gfHigh - gfLow <= 0.05 ? "planner-gf-thumb-low" : undefined}
+          type="range"
+          min="0.3"
+          max="0.7"
+          step="0.05"
+          value={gfLow}
+          onChange={(event) => onChange(Math.min(Number(event.target.value), gfHigh), gfHigh)}
+        />
+        <input
+          aria-label="GF High"
+          className={gfHigh - gfLow <= 0.05 ? "planner-gf-thumb-high" : undefined}
+          type="range"
+          min="0.7"
+          max="0.95"
+          step="0.05"
+          value={gfHigh}
+          onChange={(event) => onChange(gfLow, Math.max(Number(event.target.value), gfLow))}
+        />
       </div>
       <div className="planner-presets" aria-label="Gradient factor presets">
         {PRESETS.map((preset) => (
