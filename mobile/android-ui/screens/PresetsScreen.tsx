@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { ArrowLeft, Check, Edit3, Plus, Save, Star, Trash2, X } from 'lucide-react-native';
 import type { EquipmentPreset, SuitType, TankType } from '@scuba-log/shared/modules/equipment/domain/preset.model';
 import { deletePreset, getAllPresets, savePreset } from '@scuba-log/shared/storage/repositories/presetRepository';
@@ -30,21 +30,29 @@ function Field({ label, value, onChangeText, placeholder, keyboardType = 'defaul
   return <View style={{ gap: 5 }}><Text style={{ color: colors.muted, fontSize: 12 }}>{label}</Text><TextInput value={value} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={colors.muted} keyboardType={keyboardType} style={inputStyle} /></View>;
 }
 
+const createPresetForm = (preset?: EquipmentPreset): EquipmentPreset => ({
+  id: preset?.id ?? `preset-${Date.now()}`,
+  name: preset?.name ?? '',
+  isDefault: preset?.isDefault ?? false,
+  suitType: preset?.suitType,
+  suitSize: preset?.suitSize ?? '',
+  bootSize: preset?.bootSize ?? '',
+  weightKg: preset?.weightKg,
+  tankCapacityLiters: preset?.tankCapacityLiters,
+  tankType: preset?.tankType,
+  specialEquipment: preset?.specialEquipment ?? '',
+  updatedAt: preset?.updatedAt ?? Date.now(),
+});
+
 function PresetFormModal({ preset, visible, onClose, onSaved }: { preset?: EquipmentPreset; visible: boolean; onClose: () => void; onSaved: () => void }) {
-  const [form, setForm] = useState<EquipmentPreset>(() => ({
-    id: preset?.id ?? `preset-${Date.now()}`,
-    name: preset?.name ?? '',
-    isDefault: preset?.isDefault ?? false,
-    suitType: preset?.suitType,
-    suitSize: preset?.suitSize ?? '',
-    bootSize: preset?.bootSize ?? '',
-    weightKg: preset?.weightKg,
-    tankCapacityLiters: preset?.tankCapacityLiters,
-    tankType: preset?.tankType,
-    specialEquipment: preset?.specialEquipment ?? '',
-    updatedAt: preset?.updatedAt ?? Date.now(),
-  }));
+  const [form, setForm] = useState<EquipmentPreset>(() => createPresetForm(preset));
   const [error, setError] = useState('');
+  useEffect(() => {
+    if (visible) {
+      setForm(createPresetForm(preset));
+      setError('');
+    }
+  }, [preset, visible]);
   const set = <K extends keyof EquipmentPreset>(key: K, value: EquipmentPreset[K]) => setForm((current) => ({ ...current, [key]: value }));
   const numberValue = (value: string) => value === '' ? undefined : Number(value);
 
@@ -82,8 +90,8 @@ function PresetFormModal({ preset, visible, onClose, onSaved }: { preset?: Equip
             <Field label="Name" placeholder="e.g. Tropical setup" value={form.name} onChangeText={(value) => set('name', value)} />
             <View style={{ flexDirection: 'row', gap: 9 }}><View style={{ flex: 1 }}><Field label="Suit size" placeholder="e.g. L" value={form.suitSize ?? ''} onChangeText={(value) => set('suitSize', value)} /></View><View style={{ flex: 1 }}><Field label="Boot size" placeholder="e.g. 43 EU" value={form.bootSize ?? ''} onChangeText={(value) => set('bootSize', value)} /></View></View>
             <View style={{ flexDirection: 'row', gap: 9 }}><View style={{ flex: 1 }}><Field label="Weight (kg)" placeholder="e.g. 8" value={form.weightKg?.toString() ?? ''} onChangeText={(value) => set('weightKg', numberValue(value))} keyboardType="numeric" /></View><View style={{ flex: 1 }}><Field label="Tank capacity (L)" placeholder="e.g. 15" value={form.tankCapacityLiters?.toString() ?? ''} onChangeText={(value) => set('tankCapacityLiters', numberValue(value))} keyboardType="numeric" /></View></View>
-            <View style={{ flexDirection: 'row', gap: 9 }}><View style={{ flex: 1 }}><SelectField label="Suit type" value={form.suitType} options={suitTypes} onChange={(value) => set('suitType', value as SuitType | undefined)} /></View><View style={{ flex: 1 }}><SelectField label="Tank type" value={form.tankType} options={tankTypes} onChange={(value) => set('tankType', value as TankType | undefined)} /></View></View>
-            <View style={{ gap: 5 }}><Text style={{ color: colors.muted, fontSize: 12 }}>Special equipment</Text><TextInput multiline numberOfLines={3} value={form.specialEquipment} onChangeText={(value) => set('specialEquipment', value)} placeholder="e.g. DSMB, camera" placeholderTextColor={colors.muted} style={{ ...inputStyle, minHeight: 72, textAlignVertical: 'top' }} /></View>
+            <View style={{ flexDirection: 'row', gap: 9, zIndex: 10, elevation: 10 }}><View style={{ flex: 1, zIndex: 11, elevation: 11 }}><SelectField label="Suit type" value={form.suitType} options={suitTypes} onChange={(value) => set('suitType', value as SuitType | undefined)} /></View><View style={{ flex: 1, zIndex: 11, elevation: 11 }}><SelectField label="Tank type" value={form.tankType} options={tankTypes} onChange={(value) => set('tankType', value as TankType | undefined)} /></View></View>
+            <View style={{ gap: 5, zIndex: 0, elevation: 0 }}><Text style={{ color: colors.muted, fontSize: 12 }}>Special equipment</Text><TextInput multiline numberOfLines={3} value={form.specialEquipment} onChangeText={(value) => set('specialEquipment', value)} placeholder="e.g. DSMB, camera" placeholderTextColor={colors.muted} style={{ ...inputStyle, minHeight: 72, textAlignVertical: 'top' }} /></View>
             <Pressable onPress={() => set('isDefault', !form.isDefault)} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}><View style={{ width: 19, height: 19, borderColor: form.isDefault ? colors.accent : colors.muted, borderWidth: 1, borderRadius: 3, backgroundColor: form.isDefault ? colors.accent : 'transparent', alignItems: 'center', justifyContent: 'center' }}>{form.isDefault && <Check size={14} color={colors.background} />}</View><Text style={{ color: colors.text, fontSize: 13 }}>Use as default for new dives</Text></Pressable>
             {error && <Text style={{ color: '#fbbf24', fontSize: 12 }}>{error}</Text>}
             <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 9 }}><Pressable onPress={onClose} style={{ borderColor: colors.border, borderWidth: 1, borderRadius: 4, paddingHorizontal: 14, paddingVertical: 10 }}><Text style={{ color: colors.text, fontWeight: '700' }}>Cancel</Text></Pressable><Pressable onPress={() => void submit()} style={{ backgroundColor: colors.accent, borderRadius: 4, paddingHorizontal: 14, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', gap: 6 }}><Save size={15} color={colors.background} /><Text style={{ color: colors.background, fontWeight: '800' }}>Save preset</Text></Pressable></View>
@@ -98,9 +106,24 @@ export function PresetsScreen({ onBack }: { onBack: () => void }) {
   const [presets, setPresets] = useState<EquipmentPreset[]>([]);
   const [editing, setEditing] = useState<EquipmentPreset>();
   const [creating, setCreating] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<EquipmentPreset>();
+  const [deleteError, setDeleteError] = useState('');
   const refresh = async () => setPresets(await getAllPresets());
   useEffect(() => { void refresh(); }, []);
-  const remove = (preset: EquipmentPreset) => Alert.alert('Delete preset?', `Delete "${preset.name}"?`, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => void deletePreset(preset.id).then(refresh) }]);
+  const remove = (preset: EquipmentPreset) => {
+    setDeleteError('');
+    setPendingDelete(preset);
+  };
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    try {
+      await deletePreset(pendingDelete.id);
+      setPendingDelete(undefined);
+      await refresh();
+    } catch {
+      setDeleteError('The preset could not be removed. Please try again.');
+    }
+  };
   const makeDefault = async (preset: EquipmentPreset) => { await savePreset({ ...preset, isDefault: true }); await refresh(); };
 
   return (
@@ -117,6 +140,23 @@ export function PresetsScreen({ onBack }: { onBack: () => void }) {
         </View>
       </View>)}{presets.length === 0 && <View style={tokens.card}><Text style={tokens.body}>No equipment presets saved yet.</Text></View>}</View>
       <PresetFormModal visible={creating || editing !== undefined} preset={editing} onClose={() => { setCreating(false); setEditing(undefined); }} onSaved={() => { setCreating(false); setEditing(undefined); void refresh(); }} />
+      <Modal visible={pendingDelete !== undefined} transparent animationType="fade" onRequestClose={() => setPendingDelete(undefined)}>
+        <View style={{ flex: 1, backgroundColor: '#020617cc', justifyContent: 'center', padding: 24 }}>
+          <View style={{ backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 6, padding: 18, gap: 12 }}>
+            <Text style={{ color: colors.text, fontSize: 19, fontWeight: '800' }}>Delete preset?</Text>
+            <Text style={{ color: colors.muted, fontSize: 14 }}>Delete "{pendingDelete?.name}"? This action cannot be undone.</Text>
+            {deleteError && <Text style={{ color: '#fbbf24', fontSize: 12 }}>{deleteError}</Text>}
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 9, marginTop: 4 }}>
+              <Pressable onPress={() => setPendingDelete(undefined)} style={{ borderColor: colors.border, borderWidth: 1, borderRadius: 4, paddingHorizontal: 14, paddingVertical: 10 }}>
+                <Text style={{ color: colors.text, fontWeight: '700' }}>Cancel</Text>
+              </Pressable>
+              <Pressable onPress={() => void confirmDelete()} style={{ backgroundColor: '#ef4444', borderRadius: 4, paddingHorizontal: 14, paddingVertical: 10 }}>
+                <Text style={{ color: colors.text, fontWeight: '800' }}>Delete</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
