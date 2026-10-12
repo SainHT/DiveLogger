@@ -56,9 +56,9 @@ function RatingStars({ rating }: { rating?: number }) {
   );
 }
 
-type Props = { onNewDive: () => void; onPresets: () => void };
+type Props = { onNewDive: () => void; onPresets: () => void; onDive: (dive: DiveLog) => void };
 
-export function LogbookScreen({ onNewDive, onPresets }: Props) {
+export function LogbookScreen({ onNewDive, onPresets, onDive }: Props) {
   const [dives, setDives] = useState<DiveLog[]>([]);
   const [query, setQuery] = useState('');
   const [gas, setGas] = useState('all');
@@ -108,7 +108,7 @@ export function LogbookScreen({ onNewDive, onPresets }: Props) {
 
       <View style={{ gap: 10, zIndex: 0 }}>
         {filtered.map((dive) => (
-          <View key={dive.id} style={{ backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 6, padding: 14, gap: 12 }}>
+          <Pressable key={dive.id} onPress={() => onDive(dive)} style={{ backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 6, padding: 14, gap: 12 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={{ color: colors.muted, fontSize: 12, fontWeight: '800', fontFamily: 'monospace' }}>#{String(dive.diveNumber).padStart(3, '0')}</Text>
               <GasBadge gas={dive.gasMix} />
@@ -124,7 +124,7 @@ export function LogbookScreen({ onNewDive, onPresets }: Props) {
               </View>
               <RatingStars rating={dive.rating} />
             </View>
-          </View>
+          </Pressable>
         ))}
         {filtered.length === 0 && <View style={tokens.card}><Text style={tokens.body}>{dives.length === 0 ? 'No dives recorded yet.' : 'No dives match those filters.'}</Text></View>}
       </View>

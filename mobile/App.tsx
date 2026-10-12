@@ -22,16 +22,19 @@ import {
 } from "lucide-react-native";
 import { Text, View } from "react-native";
 import { EntryScreen } from "./android-ui/screens/EntryScreen";
+import { DiveDetailScreen } from "./android-ui/screens/DiveDetailScreen";
 import { LogbookScreen } from "./android-ui/screens/LogbookScreen";
 import { OverviewScreen } from "./android-ui/screens/OverviewScreen";
 import { PlannerScreen } from "./android-ui/screens/PlannerScreen";
 import { PresetsScreen } from "./android-ui/screens/PresetsScreen";
 import { colors } from "./android-ui/styles/tokens";
+import type { DiveLog } from "@scuba-log/shared/modules/dives/domain/dive.model";
 
 type RootStackParamList = {
   MainTabs: NavigatorScreenParams<TabParamList>;
   Entry: undefined;
   Presets: undefined;
+  DiveDetail: { dive: DiveLog };
 };
 type TabParamList = {
   Overview: undefined;
@@ -111,6 +114,7 @@ function LogbookTabScreen() {
     <LogbookScreen
       onNewDive={() => navigation.navigate("Entry")}
       onPresets={() => navigation.navigate("Presets")}
+      onDive={(dive) => navigation.navigate("DiveDetail", { dive })}
     />
   );
 }
@@ -172,6 +176,18 @@ function AppShell() {
         {({ navigation }) => (
           <PresetsScreen
             onBack={() =>
+              navigation.navigate("MainTabs", { screen: "Logbook" })
+            }
+          />
+        )}
+      </Stack.Screen>
+      <Stack.Screen name="DiveDetail">
+        {({ route, navigation }) => (
+          <DiveDetailScreen
+            dive={route.params.dive}
+            onBack={() => navigation.goBack()}
+            onEdit={() => navigation.navigate("Entry")}
+            onDeleted={() =>
               navigation.navigate("MainTabs", { screen: "Logbook" })
             }
           />
