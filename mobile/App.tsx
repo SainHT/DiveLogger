@@ -90,6 +90,21 @@ type LogbookNavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList>
 >;
 
+type OverviewNavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<TabParamList, "Overview">,
+  NativeStackNavigationProp<RootStackParamList>
+>;
+
+function OverviewTabScreen() {
+  const navigation = useNavigation<OverviewNavigationProp>();
+  return (
+    <OverviewScreen
+      onNewDive={() => navigation.navigate("Entry")}
+      onLogbook={() => navigation.navigate("Logbook")}
+    />
+  );
+}
+
 function LogbookTabScreen() {
   const navigation = useNavigation<LogbookNavigationProp>();
   return (
@@ -108,7 +123,7 @@ function MainTabs() {
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.muted,
         tabBarStyle: {
-          backgroundColor: colors.surface,
+          backgroundColor: colors.background,
           borderTopColor: colors.border,
           borderTopWidth: 1,
           height: 64,
@@ -129,7 +144,7 @@ function MainTabs() {
         },
       })}
     >
-      <Tabs.Screen name="Overview" component={OverviewScreen} />
+      <Tabs.Screen name="Overview" component={OverviewTabScreen} />
       <Tabs.Screen name="Logbook" component={LogbookTabScreen} />
       <Tabs.Screen
         name="Connect"
