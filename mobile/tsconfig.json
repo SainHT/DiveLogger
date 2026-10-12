@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "expo/tsconfig.base",
+    "../tsconfig.json"
+  ],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM"],
+    "types": ["react"],
+    "noEmit": true
+  },
+  "include": ["./**/*.ts", "./**/*.tsx", "../shared"]
+}

@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "Scuba Log",
+    "slug": "scuba-log",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "android": {
+      "package": "com.sainht.scubalog"
+    }
+  }
+}
