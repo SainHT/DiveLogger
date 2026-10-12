@@ -130,11 +130,11 @@ function MainTabs() {
           backgroundColor: colors.background,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          height: 64,
-          paddingBottom: 8,
-          paddingTop: 8,
+          height: 76,
+          paddingBottom: 10,
+          paddingTop: 6,
         },
-        tabBarLabelStyle: { fontSize: 10, fontWeight: "700" },
+        tabBarLabelStyle: { fontSize: 10, lineHeight: 13, fontWeight: "700" },
         tabBarIcon: ({ color, size }) => {
           const Icon =
             route.name === "Overview"
