@@ -32,7 +32,7 @@ import type { DiveLog } from "@scuba-log/shared/modules/dives/domain/dive.model"
 
 type RootStackParamList = {
   MainTabs: NavigatorScreenParams<TabParamList>;
-  Entry: undefined;
+  Entry: { dive?: DiveLog } | undefined;
   Presets: undefined;
   DiveDetail: { dive: DiveLog };
 };
@@ -164,8 +164,10 @@ function AppShell() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="Entry">
-        {({ navigation }) => (
+        {({ route, navigation }) => (
           <EntryScreen
+            dive={route.params?.dive}
+            onCancel={() => navigation.goBack()}
             onSaved={() =>
               navigation.navigate("MainTabs", { screen: "Logbook" })
             }
@@ -186,7 +188,7 @@ function AppShell() {
           <DiveDetailScreen
             dive={route.params.dive}
             onBack={() => navigation.goBack()}
-            onEdit={() => navigation.navigate("Entry")}
+            onEdit={() => navigation.navigate("Entry", { dive: route.params.dive })}
             onDeleted={() =>
               navigation.navigate("MainTabs", { screen: "Logbook" })
             }
