@@ -434,6 +434,21 @@ button {
     500 11px "DM Mono",
     monospace;
 }
+.badge-cyan {
+  color: #22d3ee;
+  background: rgba(8, 47, 73, 0.3);
+  border-color: rgba(21, 94, 117, 0.5);
+}
+.badge-emerald {
+  color: #34d399;
+  background: rgba(6, 78, 59, 0.3);
+  border-color: rgba(6, 95, 70, 0.5);
+}
+.badge-pink {
+  color: #f472b6;
+  background: rgba(80, 7, 36, 0.3);
+  border-color: rgba(157, 23, 77, 0.5);
+}
 .rating {
   display: inline-flex;
   gap: 2px;
