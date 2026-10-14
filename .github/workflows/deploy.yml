@@ -20,6 +20,11 @@ jobs:
       # Step 1: Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v4
+      
+      - name: Git Credentials
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       # Step 2: Set up Node.js
       - name: Set up Node.js ${{ matrix.node-version }}
