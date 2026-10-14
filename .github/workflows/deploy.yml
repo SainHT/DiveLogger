@@ -8,6 +8,11 @@ on:
     branches:
       - main  # Deploy only when creating a pull request to the main branch
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -31,6 +36,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
       # Step 3: Install dependencies
       - name: Install Dependencies
@@ -46,6 +52,13 @@ jobs:
 
       # Step 6: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
-        run: npm run deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          # Ensure the build directory exists
+          if [ -d "web/dist" ]; then
+            echo "Deploying to GitHub Pages..."
+            npm run deploy
+          else
+            echo "Build directory 'web/dist' does not exist. Deployment skipped."
