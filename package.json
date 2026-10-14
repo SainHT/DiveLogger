@@ -1,8 +1,8 @@
 {
   "name": "scuba-log-repo",
-  "homepage": "https://sainht.github.io/DiveLogger",
+  "homepage": "https://sainht.github.io/DiveLogger/",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "npm run dev --workspace web",
