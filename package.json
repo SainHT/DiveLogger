@@ -1,5 +1,6 @@
 {
   "name": "scuba-log-repo",
+  "homepage": "https://sainht.github.io/DiveLogger",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,7 +8,9 @@
     "dev": "npm run dev --workspace web",
     "build": "npm run build --workspace web",
     "lint": "npm run lint --workspace web",
-    "preview": "npm run preview --workspace web"
+    "preview": "npm run preview --workspace web",
+    "predeploy": "npm run build --workspace web",
+    "deploy": "gh-pages -d web/dist"
   },
   "workspaces": [
     "shared",
@@ -15,6 +18,7 @@
     "mobile"
   ],
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "typescript": "~6.0.3"
   },
   "dependencies": {
