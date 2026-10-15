@@ -18,13 +18,14 @@
     "web",
     "mobile"
   ],
-  "devDependencies": {
-    "gh-pages": "^6.3.0",
-    "typescript": "~6.0.3"
-  },
   "dependencies": {
     "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "react-native-web": "^0.21.4"
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "typescript": "~6.0.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0"
   }
 }
