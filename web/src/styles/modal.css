@@ -1,0 +1,149 @@
+/* Modal and preset styles */
+
+.preset-selector {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #253950;
+}
+.preset-selector .button {
+  min-width: 172px;
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(3, 10, 18, 0.78);
+}
+.modal {
+  width: min(620px, 100%);
+  max-height: min(760px, calc(100svh - 40px));
+  overflow: auto;
+  padding: 24px;
+  background: #122238;
+  border: 1px solid #31516a;
+  border-radius: 8px;
+  box-shadow: 0 24px 70px #0009;
+}
+.modal-wide {
+  width: min(840px, 100%);
+}
+.modal-heading,
+.modal-toolbar {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.modal-heading h2 {
+  margin: 7px 0 0;
+  color: #f8fafc;
+  font-size: 24px;
+}
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: #a9bbce;
+  background: #172c44;
+  border: 1px solid #2d4964;
+  border-radius: 5px;
+}
+.icon-button:hover {
+  color: #67e8f9;
+  border-color: #34728a;
+}
+.modal-form {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #c8d4e0;
+  font-size: 13px;
+}
+.checkbox-field input {
+  accent-color: #22d3ee;
+}
+.modal-toolbar {
+  align-items: center;
+  margin: 22px 0 16px;
+}
+.modal-toolbar p {
+  margin: 0;
+}
+.preset-list {
+  display: grid;
+  gap: 8px;
+}
+.preset-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 15px;
+  background: #132238;
+  border: 1px solid #263f58;
+  border-radius: 6px;
+}
+.preset-row strong {
+  color: #f1f5f9;
+}
+.preset-meta {
+  margin-top: 5px;
+  color: #8192a8;
+  font-size: 12px;
+}
+.preset-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.preset-row-actions .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.danger-text {
+  color: #fda4af;
+}
+@media (max-width: 600px) {
+  .preset-selector {
+    grid-template-columns: 1fr;
+  }
+  .preset-selector .button {
+    width: 100%;
+  }
+  .modal {
+    padding: 18px;
+  }
+  .modal-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .preset-row {
+    align-items: start;
+    flex-direction: column;
+  }
+  .preset-row-actions {
+    justify-content: start;
+  }
+}

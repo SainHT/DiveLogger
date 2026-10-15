@@ -1,0 +1,10 @@
+/* Theme tokens and typography styles */
+
+:root {
+  font-family: "Manrope", sans-serif;
+  color: #e6eef7;
+  background: #0b1422;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
