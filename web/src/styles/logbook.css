@@ -1,0 +1,102 @@
+/* Logbook styles */
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px;
+  background: #132238;
+  border: 1px solid #223852;
+  border-radius: 7px;
+}
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+  color: #6f849b;
+}
+.search-field input {
+  width: 100%;
+  color: #e6eef7;
+  background: transparent;
+  border: 0;
+  outline: 0;
+}
+.filters select,
+.field select,
+.field input,
+.field textarea {
+  min-height: 42px;
+  width: 100%;
+  padding: 0 11px;
+  color: #dbe8f4;
+  background: #101d2f;
+  border: 1px solid #2a4057;
+  border-radius: 5px;
+  outline: none;
+}
+.filters select {
+  width: auto;
+}
+.filter-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #8192a8;
+  font-size: 12px;
+}
+.table-wrap {
+  overflow: auto;
+  border: 1px solid #223852;
+  border-radius: 7px;
+}
+.table-header,
+.table-row {
+  min-width: 760px;
+  display: grid;
+  grid-template-columns: 0.65fr 1.6fr 0.8fr 0.9fr 0.8fr 0.8fr;
+  align-items: center;
+  gap: 18px;
+  padding: 13px 18px;
+}
+.table-header {
+  color: #6f849b;
+  background: #101d2f;
+  font:
+    500 10px "DM Mono",
+    monospace;
+  letter-spacing: 0.1em;
+}
+.table-row {
+  width: 100%;
+  color: #b4c2d1;
+  text-align: left;
+  background: #132238;
+  border: 0;
+  border-top: 1px solid #203650;
+}
+.table-row span {
+  display: grid;
+  gap: 3px;
+}
+.table-row small {
+  color: #8192a8;
+}
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  color: #91a3b8;
+  font-size: 13px;
+}
+.detail-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

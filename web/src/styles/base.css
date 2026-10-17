@@ -1,0 +1,28 @@
+/* Base styles */
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(
+      circle at 75% -15%,
+      rgba(6, 182, 212, 0.14),
+      transparent 30rem
+    ),
+    #0b1422;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+#root {
+  min-height: 100svh;
+}

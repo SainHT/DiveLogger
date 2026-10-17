@@ -1,0 +1,124 @@
+/* Overview styles */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.stat-card,
+.panel,
+.info-block,
+.form-section {
+  background: linear-gradient(
+    135deg,
+    rgba(27, 43, 62, 0.9),
+    rgba(18, 31, 48, 0.9)
+  );
+  border: 1px solid #263b52;
+  border-radius: 8px;
+}
+.stat-card {
+  min-height: 142px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.stat-card strong {
+  color: #f8fafc;
+  font-size: 25px;
+}
+.stat-icon {
+  color: #67e8f9;
+  margin-bottom: 12px;
+}
+.section-block,
+.dive-feed {
+  display: grid;
+  gap: 15px;
+}
+.dive-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1.4fr 0.8fr 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 18px;
+  color: #c6d2df;
+  text-align: left;
+  background: #132238;
+  border: 1px solid #203650;
+  border-radius: 6px;
+}
+.dive-row:hover,
+.table-row:hover {
+  background: #192b42;
+  border-color: #2c5972;
+}
+.dive-date,
+.dive-measure {
+  display: grid;
+  gap: 3px;
+}
+.dive-row strong,
+.table-row b {
+  color: #f1f5f9;
+}
+.type-label {
+  display: block;
+  margin-top: 7px;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  color: #67e8f9;
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  border-radius: 4px;
+  font:
+    500 11px "DM Mono",
+    monospace;
+}
+.badge-cyan {
+  color: #22d3ee;
+  background: rgba(8, 47, 73, 0.3);
+  border-color: rgba(21, 94, 117, 0.5);
+}
+.badge-emerald {
+  color: #34d399;
+  background: rgba(6, 78, 59, 0.3);
+  border-color: rgba(6, 95, 70, 0.5);
+}
+.badge-pink {
+  color: #f472b6;
+  background: rgba(80, 7, 36, 0.3);
+  border-color: rgba(157, 23, 77, 0.5);
+}
+.rating {
+  display: inline-flex;
+  gap: 2px;
+  color: #41546d;
+}
+.table-row .rating {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  white-space: nowrap;
+}
+.star {
+  display: inline-flex;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: 0;
+}
+.star.active {
+  color: #fbbf24;
+}
+.empty-state,
+.empty-chart {
+  padding: 42px;
+  color: #8192a8;
+  text-align: center;
+  border: 1px dashed #2a4057;
+  border-radius: 7px;
+}

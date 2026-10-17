@@ -1,15 +1,9 @@
 import { ArrowLeft, CalendarDays, Edit3, MapPin, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import type {
-  DiveLog,
-  DiveProfileSample,
-} from "@scuba-log/shared/modules/dives/domain/dive.model";
+import type { DiveLog, DiveProfileSample } from "@scuba-log/shared/modules/dives/domain/dive.model";
 import { generateMockProfile } from "@scuba-log/shared/modules/telemetry/utils/mockProfileGenerator";
 import { deleteDive } from "@scuba-log/shared/storage/repositories/diveRepository";
-import {
-  getProfileSamples,
-  saveProfileSamples,
-} from "@scuba-log/shared/storage/repositories/profileRepository";
+import { getProfileSamples, saveProfileSamples } from "@scuba-log/shared/storage/repositories/profileRepository";
 import { BaseButton } from "../components/common/BaseButton";
 import { RatingStars } from "../components/common/RatingStars";
 import { DepthProfileChart } from "../components/charts/DepthProfileChart";
@@ -90,6 +84,9 @@ export function DiveDetailView({
             </span>
             <span>Buddy: {dive.buddy || "—"}</span>
             <span>{dive.waterType ?? "—"} water</span>
+            <span>
+              Dive time: {value(dive.diveStart)} - {value(dive.diveEnd)}
+            </span>
           </div>
         </div>
         <div className="detail-actions">
