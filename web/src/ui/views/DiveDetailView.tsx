@@ -84,6 +84,9 @@ export function DiveDetailView({
             </span>
             <span>Buddy: {dive.buddy || "—"}</span>
             <span>{dive.waterType ?? "—"} water</span>
+            <span>
+              Dive time: {value(dive.diveStart)} - {value(dive.diveEnd)}
+            </span>
           </div>
         </div>
         <div className="detail-actions">

@@ -289,6 +289,9 @@ export function DiveHeader({
         <Text style={{ color: colors.muted }}>
           {dive.waterType ?? "—"} water
         </Text>
+        <Text style={{ color: colors.muted }}>
+          Dive time: {value(dive.diveStart)} - {value(dive.diveEnd)}
+        </Text>
       </View>
       <View
         style={{
