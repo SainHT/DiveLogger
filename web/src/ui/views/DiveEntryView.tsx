@@ -42,6 +42,8 @@ export function DiveEntryView({
           form={entry.form}
           set={entry.set}
           applyPreset={entry.applyPreset}
+          selectedPresetId={entry.selectedPresetId}
+          isCustom={entry.isCustom}
           saveAsPreset={entry.saveAsPreset}
           setSaveAsPreset={entry.setSaveAsPreset}
         />

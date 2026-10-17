@@ -49,6 +49,10 @@
   color: #8ea0b4;
   font-size: 12px;
 }
+.preset-selector select.custom-preset {
+  color: #67e8f9;
+  font-weight: 800;
+}
 .field textarea {
   resize: vertical;
   padding-top: 10px;

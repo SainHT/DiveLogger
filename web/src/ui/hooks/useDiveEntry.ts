@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { applyPresetToDiveForm } from "../../modules/equipment/hooks/usePresetAutofill";
 import type { DiveLog } from "@scuba-log/shared/modules/dives/domain/dive.model";
+import type { EquipmentPreset } from "@scuba-log/shared/modules/equipment/domain/preset.model";
 import { createDive, getAllDives, updateDive, type NewDiveLog } from "@scuba-log/shared/storage/repositories/diveRepository";
 import { savePreset } from "@scuba-log/shared/storage/repositories/presetRepository";
 import { calculateSAC } from "@scuba-log/shared/modules/physics/utils/gasCalculations";
@@ -51,6 +52,14 @@ const numeric = [
   "visibilityMeters",
 ] as const;
 
+const equipmentKeys = [
+  "weightKg",
+  "suitType",
+  "tankCapacityLiters",
+  "tankType",
+  "specialEquipment",
+] as const;
+
 function fromDive(dive: DiveLog): FormState {
   return {
     ...initial,
@@ -72,6 +81,9 @@ export function useDiveEntry(nextNumber: number, editingDive?: DiveLog) {
   const [saving, setSaving] = useState(false);
   const [saveAsPreset, setSaveAsPreset] = useState(false);
   const [error, setError] = useState("");
+  const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
+  const [isCustom, setIsCustom] = useState(false);
+  const [originalPresetValues, setOriginalPresetValues] = useState<Partial<FormState> | null>(null);
 
   useEffect(() => {
     if (!editingDive) {
@@ -81,6 +93,17 @@ export function useDiveEntry(nextNumber: number, editingDive?: DiveLog) {
       });
     }
   }, [editingDive, nextNumber]);
+
+  useEffect(() => {
+    if (!selectedPresetId || !originalPresetValues) return;
+    const hasChanged = equipmentKeys.some(
+      (key) => form[key] !== originalPresetValues[key],
+    );
+    if (hasChanged) {
+      setIsCustom(true);
+      setSelectedPresetId(null);
+    }
+  }, [form, originalPresetValues, selectedPresetId]);
 
   const set = (key: keyof FormState, raw: string | undefined) => {
     setForm((current) => ({
@@ -102,8 +125,22 @@ export function useDiveEntry(nextNumber: number, editingDive?: DiveLog) {
     });
   };
 
-  const applyPreset = (preset: Parameters<typeof applyPresetToDiveForm>[1]) =>
-    setForm((current) => ({ ...current, ...applyPresetToDiveForm(current, preset) }));
+  const applyPreset = (preset: EquipmentPreset) => {
+    setForm((current) => {
+      const next = { ...current, ...applyPresetToDiveForm(current, preset) };
+      const baseline: Partial<FormState> = {
+        weightKg: next.weightKg,
+        suitType: next.suitType,
+        tankCapacityLiters: next.tankCapacityLiters,
+        tankType: next.tankType,
+        specialEquipment: next.specialEquipment,
+      };
+      setOriginalPresetValues(baseline);
+      return next;
+    });
+    setSelectedPresetId(preset.id);
+    setIsCustom(false);
+  };
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -141,6 +178,7 @@ export function useDiveEntry(nextNumber: number, editingDive?: DiveLog) {
 
   return {
     form, set, setTime, applyPreset, submit, saving, saveAsPreset, setSaveAsPreset,
+    selectedPresetId, isCustom,
     error, consumption, mod: ((1.4 / fO2) - 1) * 10,
     setRating: (rating: number) => setForm((current) => ({ ...current, rating })),
   };

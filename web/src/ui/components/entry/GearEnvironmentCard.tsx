@@ -4,9 +4,9 @@ import type { EquipmentPreset } from "@scuba-log/shared/modules/equipment/domain
 import { FormSection, SelectField } from "./EntryFormPrimitives";
 import type { FormState } from "../../hooks/useDiveEntry";
 
-type Props = { form: FormState; set: (key: keyof FormState, value: string | undefined) => void; applyPreset: (preset: EquipmentPreset) => void; saveAsPreset: boolean; setSaveAsPreset: (value: boolean) => void };
-export function GearEnvironmentCard({ form, set, applyPreset, saveAsPreset, setSaveAsPreset }: Props) {
-  return <FormSection title="Gear and environment"><PresetSelector onSelectPreset={applyPreset} /><label className="checkbox-field"><input type="checkbox" checked={saveAsPreset} onChange={(e) => setSaveAsPreset(e.target.checked)} />{" "}Save these settings as a new preset</label><div className="form-grid mobile-layout">
+type Props = { form: FormState; set: (key: keyof FormState, value: string | undefined) => void; applyPreset: (preset: EquipmentPreset) => void; selectedPresetId: string | null; isCustom: boolean; saveAsPreset: boolean; setSaveAsPreset: (value: boolean) => void };
+export function GearEnvironmentCard({ form, set, applyPreset, selectedPresetId, isCustom, saveAsPreset, setSaveAsPreset }: Props) {
+  return <FormSection title="Gear and environment"><PresetSelector onSelectPreset={applyPreset} selectedPresetId={selectedPresetId} isCustom={isCustom} /><label className="checkbox-field"><input type="checkbox" checked={saveAsPreset} onChange={(e) => setSaveAsPreset(e.target.checked)} />{" "}Save these settings as a new preset</label><div className="form-grid mobile-layout">
     <BaseInput className="mobile-half" label="Weight (kg)" type="number" step="0.1" placeholder="e.g. 6" value={form.weightKg || ""} onChange={(e) => set("weightKg", e.target.value)} required />
     <SelectField className="mobile-half" label="Suit type" value={form.suitType || ""} options={["Shorty", "3mm", "5mm", "7mm", "Semi-Dry", "Drysuit"]} onChange={(value) => set("suitType", value)} />
     <BaseInput className="mobile-full" label="Special equipment" placeholder="e.g. DSMB, camera" value={form.specialEquipment} onChange={(e) => set("specialEquipment", e.target.value)} />
