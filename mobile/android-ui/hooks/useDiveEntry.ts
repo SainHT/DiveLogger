@@ -53,6 +53,7 @@ export type Form = {
 export type FormKey = keyof Form;
 export type SetForm = <K extends FormKey>(key: K, value: Form[K]) => void;
 export type TimeKey = "startTime" | "duration" | "endTime";
+const equipmentKeys = ["weight", "suit", "tankCapacity", "tank", "equipment"] as const;
 
 export const suitTypes: SuitType[] = [
   "Shorty",
@@ -145,9 +146,15 @@ export function useDiveEntry(
   const [presets, setPresets] = useState<EquipmentPreset[]>([]);
   const [error, setError] = useState("");
   const [picker, setPicker] = useState<"date" | TimeKey | null>(null);
+  const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
+  const [isCustom, setIsCustom] = useState(false);
+  const [originalPresetValues, setOriginalPresetValues] = useState<Partial<Form> | null>(null);
 
   useEffect(() => {
     setForm(toForm(dive));
+    setSelectedPresetId(null);
+    setIsCustom(false);
+    setOriginalPresetValues(null);
     void getAllPresets().then(setPresets);
     if (!dive) {
       void getAllDives().then((dives) => {
@@ -163,6 +170,14 @@ export function useDiveEntry(
       });
     }
   }, [dive]);
+
+  useEffect(() => {
+    if (!selectedPresetId || !originalPresetValues) return;
+    if (equipmentKeys.some((key) => form[key] !== originalPresetValues[key])) {
+      setIsCustom(true);
+      setSelectedPresetId(null);
+    }
+  }, [form, originalPresetValues, selectedPresetId]);
 
   const set = <K extends FormKey>(key: K, value: Form[K]) =>
     setForm((current) => ({ ...current, [key]: value }));
@@ -284,18 +299,26 @@ export function useDiveEntry(
   const applyPreset = (id: string) => {
     const preset = presets.find((item) => item.id === id);
     if (preset)
-      setForm((current) => ({
-        ...current,
-        weight:
-          preset.weightKg == null ? current.weight : String(preset.weightKg),
-        tankCapacity:
-          preset.tankCapacityLiters == null
-            ? current.tankCapacity
-            : String(preset.tankCapacityLiters),
-        tank: preset.tankType ?? current.tank,
-        suit: preset.suitType ?? current.suit,
-        equipment: preset.specialEquipment ?? current.equipment,
-      }));
+      setForm((current) => {
+        const next = {
+          ...current,
+          weight: preset.weightKg == null ? current.weight : String(preset.weightKg),
+          tankCapacity: preset.tankCapacityLiters == null ? current.tankCapacity : String(preset.tankCapacityLiters),
+          tank: preset.tankType ?? current.tank,
+          suit: preset.suitType ?? current.suit,
+          equipment: preset.specialEquipment ?? current.equipment,
+        };
+        setOriginalPresetValues({
+          weight: next.weight,
+          suit: next.suit,
+          tankCapacity: next.tankCapacity,
+          tank: next.tank,
+          equipment: next.equipment,
+        });
+        return next;
+      });
+    setSelectedPresetId(id);
+    setIsCustom(false);
   };
 
   const mod = calculateMOD(
@@ -312,6 +335,8 @@ export function useDiveEntry(
     onPickerChange,
     save,
     applyPreset,
+    selectedPresetId,
+    isCustom,
     mod,
   };
 }

@@ -118,7 +118,13 @@ export function Select({
   const [open, setOpen] = useState(false);
   return (
     <View
-      style={{ flex, gap: 5, zIndex: open ? 20 : 1, elevation: open ? 20 : 1 }}
+      style={{
+        flex,
+        gap: 5,
+        position: "relative",
+        zIndex: open ? 9999 : 1,
+        elevation: open ? 9999 : 1,
+      }}
     >
       <Text style={{ color: colors.muted, fontSize: 12 }}>{label}</Text>
       <Pressable
@@ -130,7 +136,7 @@ export function Select({
           alignItems: "center",
         }}
       >
-        <Text style={{ color: colors.text, fontSize: 13 }}>
+        <Text style={{ color: value === "Custom" ? colors.accent : colors.text, fontSize: 13, fontWeight: value === "Custom" ? "800" : "400" }}>
           {value || "Select"}
         </Text>
         <Text style={{ color: colors.muted }}>{open ? "▴" : "▾"}</Text>
@@ -139,15 +145,15 @@ export function Select({
         <View
           style={{
             position: "absolute",
-            top: 48,
+            top: "100%",
             left: 0,
             right: 0,
             backgroundColor: colors.surface,
             borderColor: colors.border,
             borderWidth: 1,
             borderRadius: 4,
-            zIndex: 30,
-            elevation: 30,
+            zIndex: 10000,
+            elevation: 10000,
           }}
         >
           {options.map((option) => (
@@ -172,7 +178,7 @@ export function Select({
 
 export function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <View style={{ ...tokens.card, gap: 12, zIndex: 1 }}>
+    <View style={{ ...tokens.card, gap: 12, overflow: "visible", zIndex: 1 }}>
       <Text style={{ color: colors.text, fontSize: 18, fontWeight: "800" }}>{title}</Text>
       {children}
     </View>

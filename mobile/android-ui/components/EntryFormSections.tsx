@@ -55,9 +55,11 @@ export function DepthGasSection({
         <Field label="Start pressure (bar) *" placeholder="e.g. 200" value={form.start} onChangeText={(value) => set("start", value)} keyboardType="numeric" />
         <Field label="End pressure (bar) *" placeholder="e.g. 50" value={form.end} onChangeText={(value) => set("end", value)} keyboardType="numeric" />
       </View>
-      <Select label="Gas mix *" value={form.gas} options={gasTypes} onChange={(value) => set("gas", value as RecreationalGas)} />
+      <View style={{ zIndex: 100, elevation: 100, overflow: "visible" }}>
+        <Select label="Gas mix *" value={form.gas} options={gasTypes} onChange={(value) => set("gas", value as RecreationalGas)} />
+      </View>
       <Text style={{ color: colors.accent, fontSize: 12 }}>Recommended MOD: {mod.toFixed(1)} m</Text>
-      <View style={{ flexDirection: "row", gap: 9 }}>
+      <View style={{ flexDirection: "row", gap: 9, zIndex: 1, elevation: 100 }}>
         <Field label="Tank capacity (L)" placeholder="e.g. 12" value={form.tankCapacity} onChangeText={(value) => set("tankCapacity", value)} keyboardType="numeric" />
         <Select label="Tank type *" value={form.tank} options={tankTypes} onChange={(value) => set("tank", value as TankType)} />
       </View>
@@ -65,14 +67,17 @@ export function DepthGasSection({
   );
 }
 
-export function GearEnvironmentSection({ form, set, presets, onPreset }: CommonProps & { presets: EquipmentPreset[]; onPreset: (id: string) => void }) {
+export function GearEnvironmentSection({ form, set, presets, onPreset, selectedPresetId, isCustom }: CommonProps & { presets: EquipmentPreset[]; onPreset: (id: string) => void; selectedPresetId: string | null; isCustom: boolean }) {
   return (
-    <Card title="Gear and environment">
-      <Select label="Equipment preset" value="" options={presets.map((preset) => preset.name)} onChange={(name) => {
-        const preset = presets.find((item) => item.name === name);
-        if (preset) onPreset(preset.id);
-      }} />
-      <View style={{ flexDirection: "row", gap: 9 }}>
+    <View style={{ zIndex: 0, elevation: 0 }}>
+      <Card title="Gear and environment">
+      <View style={{ zIndex: 2, elevation: 100, overflow: "visible" }}>
+        <Select label="Equipment preset" value={isCustom ? "Custom" : presets.find((preset) => preset.id === selectedPresetId)?.name ?? ""} options={[...(isCustom ? ["Custom"] : []), ...presets.map((preset) => preset.name)]} onChange={(name) => {
+          const preset = presets.find((item) => item.name === name);
+          if (preset) onPreset(preset.id);
+        }} />
+      </View>
+      <View style={{ flexDirection: "row", gap: 9, zIndex: 1, elevation: 100 }}>
         <Field label="Weight (kg) *" placeholder="e.g. 6" value={form.weight} onChangeText={(value) => set("weight", value)} keyboardType="numeric" />
         <Select label="Suit type" value={form.suit} options={suitTypes} onChange={(value) => set("suit", value as SuitType)} />
       </View>
@@ -87,7 +92,8 @@ export function GearEnvironmentSection({ form, set, presets, onPreset }: CommonP
         <Field label="Visibility (m)" placeholder="e.g. 30" value={form.visibility} onChangeText={(value) => set("visibility", value)} flex={1} keyboardType="numeric" />
       </View>
       <Field label="Special conditions" placeholder="e.g. Mild current" value={form.conditions} onChangeText={(value) => set("conditions", value)} />
-    </Card>
+      </Card>
+    </View>
   );
 }
 

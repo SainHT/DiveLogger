@@ -63,6 +63,8 @@ export function EntryScreen({
         set={entry.set}
         presets={entry.presets}
         onPreset={entry.applyPreset}
+        selectedPresetId={entry.selectedPresetId}
+        isCustom={entry.isCustom}
       />
       <NotesRatingSection form={entry.form} set={entry.set} />
       {entry.error && (
